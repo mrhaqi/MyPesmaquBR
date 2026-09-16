@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Keuangan - MyPesmaquBr</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { display: flex; background-color: #f8f9fa; color: #333; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: #1e293b; color: #fff; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; font-size: 1.2rem; font-weight: 700; background-color: #0f172a; display: flex; align-items: center; gap: 10px; color: #38bdf8; }
+        .sidebar-menu { list-style: none; padding: 20px 0; flex-grow: 1; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 25px; color: #94a3b8; text-decoration: none; font-size: 0.95rem; transition: 0.3s; }
+        .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: #334155; color: #fff; border-left: 4px solid #38bdf8; }
+
+        /* Main Content */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .topbar { background: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .container { padding: 30px; }
+
+        .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 25px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        /* Box Ringkasan Saldo */
+        .saldo-box { background: #059669; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .saldo-box h4 { font-size: 0.9rem; text-transform: uppercase; opacity: 0.9; }
+        .saldo-box h2 { font-size: 1.8rem; font-weight: 700; }
+
+        /* Form Input */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; background: #fff; }
+        .btn { background: #059669; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
+        .btn:hover { background: #047857; }
+
+        .btn-danger { background: #ef4444; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .btn-danger:hover { background: #dc2626; }
+
+        /* Tabel Data */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+        th { background-color: #f1f5f9; color: #475569; font-weight: 600; }
+
+        .badge-masuk { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .badge-keluar { background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <i class="fa-solid fa-mosque"></i> MyPesmaquBr
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="/index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+        <li><a href="/barang.html"><i class="fa-solid fa-boxes-stacked"></i> Inventaris Barang</a></li>
+        <li class="active"><a href="/keuangan.html"><i class="fa-solid fa-wallet"></i> Keuangan Pesantren</a></li>
+        <li><a href="/dokumen.html"><i class="fa-solid fa-file-lines"></i> Pengajuan Dokumen</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="topbar">
+        <h2>Modul Keuangan Pesantren</h2>
+        <span>Admin Pesantren</span>
+    </div>
+
+    <div class="container">
+        <!-- Kotak Total Sisa Saldo -->
+        <div class="saldo-box">
+            <div>
+                <h4>Total Sisa Saldo Kas</h4>
+                <h2 id="totalSisaSaldo">Rp 0</h2>
+            </div>
+            <i class="fa-solid fa-wallet" style="font-size: 2.5rem; opacity: 0.8;"></i>
+        </div>
+
+        <!-- Form Catat Keuangan -->
+        <div class="card">
+            <div class="card-header"><h3>Catat Transaksi Baru</h3></div>
+            <form id="formKeuangan">
+                <div class="form-group">
+                    <label>Tanggal Transaksi</label>
+                    <input type="date" id="tanggal" required>
+                </div>
+                <div class="form-group">
+                    <label>Keterangan Transaksi</label>
+                    <input type="text" id="keterangan" required placeholder="Contoh: Infaq Santri / Bayar Listrik">
+                </div>
+                <div class="form-group">
+                    <label>Jumlah (Rp)</label>
+                    <input type="number" id="jumlah" required placeholder="Contoh: 500000">
+                </div>
+                <div class="form-group">
+                    <label>Jenis Transaksi</label>
+                    <select id="jenis" required>
+                        <option value="">-- Pilih Jenis Transaksi --</option>
+                        <option value="Pemasukan">Pemasukan</option>
+                        <option value="Pengeluaran">Pengeluaran</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn"><i class="fa-solid fa-plus"></i> Simpan Transaksi</button>
+            </form>
+        </div>
+
+        <!-- Tabel Daftar Keuangan -->
+        <div class="card">
+            <div class="card-header"><h3>Riwayat Arus Kas Keuangan</h3></div>
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 50px;">No</th>
+                    <th>Tanggal</th>
+                    <th>Keterangan</th>
+                    <th>Jumlah (Rp)</th>
+                    <th>Jenis</th>
+                    <th>Aksi</th>
+                </tr>
+                </thead>
+                <tbody id="tabelKeuangan">
+                <!-- Data diisi otomatis -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set tanggal default ke hari ini pada form
+    document.getElementById('tanggal').valueAsDate = new Date();
+
+    async function muatDataKeuangan() {
+        try {
+            let response = await fetch('/api/keuangan');
+            let data = await response.json();
+            let tbody = document.getElementById('tabelKeuangan');
+            tbody.innerHTML = '';
+
+            let totalSaldo = 0;
+
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Belum ada data transaksi keuangan.</td></tr>';
+                document.getElementById('totalSisaSaldo').innerText = 'Rp 0';
+                return;
+            }
+
+            data.forEach((item, index) => {
+                let tr = document.createElement('tr');
+                let badgeClass = item.jenis === 'Pemasukan' ? 'badge-masuk' : 'badge-keluar';
+                let formattedNumber = new Intl.NumberFormat('id-ID').format(item.jumlah);
+
+                if(item.jenis === 'Pemasukan') {
+                    totalSaldo += item.jumlah;
+                } else if(item.jenis === 'Pengeluaran') {
+                    totalSaldo -= item.jumlah;
+                }
+
+                tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.tanggal || '-'}</td>
+                        <td>${item.keterangan}</td>
+                        <td>Rp ${formattedNumber}</td>
+                        <td><span class="${badgeClass}">${item.jenis || '-'}</span></td>
+                        <td><button class="btn-danger" onclick="hapusKeuangan(${item.id})"><i class="fa-solid fa-trash"></i> Hapus</button></td>
+                    `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('totalSisaSaldo').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(totalSaldo);
+
+        } catch (error) {
+            console.error('Gagal memuat data:', error);
+        }
+    }
+
+    async function hapusKeuangan(id) {
+        if(confirm('Yakin ingin menghapus transaksi ini?')) {
+            let response = await fetch(`/api/keuangan/${id}`, {
+                method: 'DELETE'
+            });
+            if(response.ok) {
+                muatDataKeuangan();
+            } else {
+                alert('Gagal menghapus transaksi.');
+            }
+        }
+    }
+
+    document.getElementById('formKeuangan').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        let tanggal = document.getElementById('tanggal').value;
+        let keterangan = document.getElementById('keterangan').value;
+        let jumlah = document.getElementById('jumlah').value;
+        let jenis = document.getElementById('jenis').value;
+
+        let response = await fetch('/api/keuangan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tanggal: tanggal, keterangan: keterangan, jumlah: parseFloat(jumlah), jenis: jenis })
+        });
+
+        if(response.ok) {
+            document.getElementById('formKeuangan').reset();
+            document.getElementById('tanggal').valueAsDate = new Date(); // Reset tanggal ke hari ini
+            muatDataKeuangan();
+        } else {
+            alert('Gagal menyimpan transaksi.');
+        }
+    });
+
+    muatDataKeuangan();
+</script>
+</body>
+</html>

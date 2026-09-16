@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Inventaris - MyPesmaquBr</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { display: flex; background-color: #f8f9fa; color: #333; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: #1e293b; color: #fff; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; font-size: 1.2rem; font-weight: 700; background-color: #0f172a; display: flex; align-items: center; gap: 10px; color: #38bdf8; }
+        .sidebar-menu { list-style: none; padding: 20px 0; flex-grow: 1; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 25px; color: #94a3b8; text-decoration: none; font-size: 0.95rem; transition: 0.3s; }
+        .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: #334155; color: #fff; border-left: 4px solid #38bdf8; }
+
+        /* Main Content */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .topbar { background: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .container { padding: 30px; }
+
+        .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 25px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        /* Form Input */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; background: #fff; }
+        .btn { background: #0284c7; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
+        .btn:hover { background: #0369a1; }
+
+        .btn-danger { background: #ef4444; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .btn-danger:hover { background: #dc2626; }
+
+        /* Tabel Data */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+        th { background-color: #f1f5f9; color: #475569; font-weight: 600; }
+
+        .badge-baik { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .badge-rusak { background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <i class="fa-solid fa-mosque"></i> MyPesmaquBr
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="/index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+        <li class="active"><a href="/barang.html"><i class="fa-solid fa-boxes-stacked"></i> Inventaris Barang</a></li>
+        <li><a href="/api/keuangan" target="_blank"><i class="fa-solid fa-wallet"></i> Keuangan Pesantren</a></li>
+        <li><a href="/api/dokumen" target="_blank"><i class="fa-solid fa-file-lines"></i> Pengajuan Dokumen</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="topbar">
+        <h2>Modul Inventaris Barang</h2>
+        <span>Admin Pesantren</span>
+    </div>
+
+    <div class="container">
+        <!-- Form Tambah Barang -->
+        <div class="card">
+            <div class="card-header"><h3>Tambah Barang Baru</h3></div>
+            <form id="formBarang">
+                <div class="form-group">
+                    <label>Nama Barang</label>
+                    <input type="text" id="namaBarang" required placeholder="Contoh: Lemari Kayu / Kitab Kuning">
+                </div>
+                <div class="form-group">
+                    <label>Jumlah Stok</label>
+                    <input type="number" id="stok" required placeholder="Contoh: 15">
+                </div>
+                <div class="form-group">
+                    <label>Kondisi Barang</label>
+                    <select id="kondisi" required>
+                        <option value="">-- Pilih Kondisi Barang --</option>
+                        <option value="Baik">Baik</option>
+                        <option value="Rusak">Rusak</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn"><i class="fa-solid fa-plus"></i> Simpan Barang</button>
+            </form>
+        </div>
+
+        <!-- Tabel Daftar Barang -->
+        <div class="card">
+            <div class="card-header"><h3>Daftar Inventaris Barang</h3></div>
+            <table>
+                <thead>
+                <tr>
+                    <th style="width: 60px;">No</th>
+                    <th>Nama Barang</th>
+                    <th>Stok</th>
+                    <th>Kondisi</th>
+                    <th>Aksi</th>
+                </tr>
+                </thead>
+                <tbody id="tabelBarang">
+                <!-- Data diisi otomatis -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function muatDataBarang() {
+        try {
+            let response = await fetch('/api/barang');
+            let data = await response.json();
+            let tbody = document.getElementById('tabelBarang');
+            tbody.innerHTML = '';
+
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">Belum ada data barang.</td></tr>';
+                return;
+            }
+
+            data.forEach((item, index) => {
+                let tr = document.createElement('tr');
+                let badgeClass = item.kondisi === 'Baik' ? 'badge-baik' : 'badge-rusak';
+                tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.namaBarang}</td>
+                        <td>${item.stok}</td>
+                        <td><span class="${badgeClass}">${item.kondisi || '-'}</span></td>
+                        <td><button class="btn-danger" onclick="hapusBarang(${item.id})"><i class="fa-solid fa-trash"></i> Hapus</button></td>
+                    `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error('Gagal memuat data:', error);
+        }
+    }
+
+    async function hapusBarang(id) {
+        if(confirm('Yakin ingin menghapus barang ini?')) {
+            let response = await fetch(`/api/barang/${id}`, {
+                method: 'DELETE'
+            });
+            if(response.ok) {
+                muatDataBarang();
+            } else {
+                alert('Gagal menghapus barang.');
+            }
+        }
+    }
+
+    document.getElementById('formBarang').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        let namaBarang = document.getElementById('namaBarang').value;
+        let stok = document.getElementById('stok').value;
+        let kondisi = document.getElementById('kondisi').value;
+
+        let response = await fetch('/api/barang', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ namaBarang: namaBarang, stok: parseInt(stok), kondisi: kondisi })
+        });
+
+        if(response.ok) {
+            document.getElementById('formBarang').reset();
+            muatDataBarang();
+        } else {
+            alert('Gagal menyimpan barang.');
+        }
+    });
+
+    muatDataBarang();
+</script>
+</body>
+</html>
